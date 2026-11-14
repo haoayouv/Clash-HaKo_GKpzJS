@@ -1304,14 +1304,9 @@ function main(config) {
     "DOMAIN-SUFFIX,jtvnw.net,Twitch",
     "DOMAIN-SUFFIX,ttvnw.net,Twitch",
     "DOMAIN-SUFFIX,twitchsvc.net,Twitch",
-
-    // Grok
-    "DOMAIN-SUFFIX,grok.com,Grok",
-    "DOMAIN-SUFFIX,x.ai,Grok",
-    "DOMAIN-KEYWORD,grok,Grok",
     
     // ChatGPT
-    "RULE-SET,AI,AI",
+    "RULE-SET,OpenAI_Domain,AI",
     "DOMAIN-SUFFIX,chatgpt.com,AI",
     "DOMAIN,cdn.openaimerge.com,AI",
     "DOMAIN,setup.auth.openai.com,AI",
@@ -1342,6 +1337,11 @@ function main(config) {
     "DOMAIN-SUFFIX,claudeusercontent.com,AI",
     "DOMAIN-SUFFIX,claudeusercontent.com.cdn.cloudflare.net,AI",
 
+    // Grok
+    "DOMAIN-SUFFIX,grok.com,Grok",
+    "DOMAIN-SUFFIX,x.ai,Grok",
+    "DOMAIN-KEYWORD,grok,Grok",
+    
     // Meta
     "RULE-SET,Facebook,Meta",
     "RULE-SET,Facebook_Domain,Meta",
@@ -1535,12 +1535,12 @@ function main(config) {
       "url": "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/mrs/BanProgramAD_ip.mrs"
     },
 
-    "AI": {
+    "OpenAI_Domain": {
       "type": "http",
-      "behavior": "classical",
-      "format": "yaml",
+      "behavior": "domain",
+      "format": "mrs",
       "interval": 86400,
-      "url": "https://github.com/Repcz/Tool/raw/X/Egern/Rules/AI.yaml"
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/OpenAI_domain-mrs_fadf486f6b825017.mrs"
     },
 
     "Amazon_Domain": {
