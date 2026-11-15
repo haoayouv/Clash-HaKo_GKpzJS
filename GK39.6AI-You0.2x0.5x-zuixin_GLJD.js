@@ -522,6 +522,20 @@ function main(config) {
 
   const regionGroups = [
     {
+      key: "02x",
+      name: "0️⃣2️⃣ 0.20",
+      filter: (?i)0.2x|0.20x|(\b(0.200x|0.200)\b),
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.2.png"
+    },
+    
+    {
+      key: "05x",
+      name: "0️⃣5️⃣ 0.50x",
+      filter: (?i)0.5x|0.50x|(\b(0.500x|0.500)\b),
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.5.png"
+    },
+    
+    {
       key: "US_02",
       name: "🇺🇸 US 0.20x",
       filter: /(?=.*([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸))(?=.*(?:0.20x|0.2x))/i,
