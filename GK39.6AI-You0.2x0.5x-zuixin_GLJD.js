@@ -532,7 +532,7 @@ function main(config) {
       key: "05x",
       name: "0️⃣5️⃣ 0.50x",
       filter: /0\.50x|0\.5x/i,
-      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.5.png"
     },
     
     {
