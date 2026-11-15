@@ -143,6 +143,7 @@ function main(config) {
       },
 
       "fallback": [
+        "https://dns.quad9.net/dns-query",
         "https://anycast.uncensoreddns.org/dns-query"
       ],
 
