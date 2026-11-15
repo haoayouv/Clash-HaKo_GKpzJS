@@ -525,7 +525,7 @@ function main(config) {
       key: "02x",
       name: "0️⃣2️⃣ 0.20",
       filter: /0\.20x|0\.2x/i,
-      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.2.png"
     },
 
     {
