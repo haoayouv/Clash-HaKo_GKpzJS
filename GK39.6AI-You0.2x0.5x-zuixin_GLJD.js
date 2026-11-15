@@ -523,16 +523,16 @@ function main(config) {
   const regionGroups = [
     {
       key: "02x",
-      name: "0️⃣2️⃣ 0.20",
-      filter: "(?i)0\\.20x|0\\.2x",
-      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+  name: "0️⃣2️⃣ 0.20",
+  filter: /0\.20x|0\.2x/i,
+  icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
     },
 
     {
       key: "05x",
-      name: "0️⃣5️⃣ 0.50x",
-      filter: "(?i)0\\.50x|0\\.5x",
-      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+  name: "0️⃣5️⃣ 0.50x",
+  filter: /0\.50x|0\.5x/i,
+  icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
     },
     
     {
