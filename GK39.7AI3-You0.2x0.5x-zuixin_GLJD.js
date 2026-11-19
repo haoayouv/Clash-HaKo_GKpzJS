@@ -313,7 +313,7 @@ function main(config) {
   fixed["proxy-groups"].push({
     "name": "AI3",
     "type": "select",
-    "icon": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/refs/heads/main/Ti/ChatGPT.png",
+    "icon": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ChatGPT4.png",
     "proxies": [
       
       "🔘 PROXY-Gate",
