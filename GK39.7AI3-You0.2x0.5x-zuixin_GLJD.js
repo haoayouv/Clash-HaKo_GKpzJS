@@ -311,31 +311,9 @@ function main(config) {
   });
 
   fixed["proxy-groups"].push({
-    "name": "ChatGPT",
+    "name": "AI3",
     "type": "select",
     "icon": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/refs/heads/main/Ti/ChatGPT.png",
-    "proxies": [
-      
-      "🔘 PROXY-Gate",
-      "DIRECT"
-    ]
-  });
-
-  fixed["proxy-groups"].push({
-    "name": "Gemini",
-    "type": "select",
-    "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/google-gemini.png",
-    "proxies": [
-      
-      "🔘 PROXY-Gate",
-      "DIRECT"
-    ]
-  });
-
-  fixed["proxy-groups"].push({
-    "name": "Claude",
-    "type": "select",
-    "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/anthropic.png",
     "proxies": [
       
       "🔘 PROXY-Gate",
@@ -544,6 +522,377 @@ function main(config) {
 
   const regionGroups = [
     {
+      key: "02x",
+      name: "0️⃣2️⃣ 0.20",
+      filter: /0\.20x|0\.2x/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.2.png"
+    },
+
+    {
+      key: "05x",
+      name: "0️⃣5️⃣ 0.50x",
+      filter: /0\.50x|0\.5x/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.5.png"
+    },
+    
+    {
+      key: "US_02",
+      name: "🇺🇸 US 0.20x",
+      filter: /(?=.*([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SG_02",
+      name: "🇸🇬 SG 0.20x",
+      filter: /(?=.*([\[]SG[\]]|^SG$|Singapore|\bSG\b|新加坡|狮城|🇸🇬))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "HK_02",
+      name: "🇭🇰 HK 0.20x",
+      filter: /(?=.*([\[]HK[\]]|^HK$|Hong[ _-]?Kong|\bHK\b|香港|🇭🇰))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MO_02",
+      name: "🇲🇴 MO 0.20x",
+      filter: /(?=.*([\[]MO[\]]|^MO$|Macau|Macao|\bMO\b|澳门|澳門|🇲🇴))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "JP_02",
+      name: "🇯🇵 JP 0.20x",
+      filter: /(?=.*([\[]JP[\]]|^JP$|Japan|\bJP\b|日本|东京|大阪|🇯🇵))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "TW_02",
+      name: "🇹🇼 TW 0.20x",
+      filter: /(?=.*([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇨🇳|🇹🇼))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "UK_02",
+      name: "🇬🇧 UK 0.20x",
+      filter: /(?=.*([\[]UK[\]]|^UK$|United[ _-]?Kingdom|Britain|England|\bUK\b|英国|英國|伦敦|🇬🇧))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "DE_02",
+      name: "🇩🇪 DE 0.20x",
+      filter:/(?=.*([\[]DE[\]]|^DE$|Germany|Deutschland|\bDE\b|德国|德國|法兰克福|🇩🇪))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FR_02",
+      name: "🇫🇷 FR 0.20x",
+      filter: /(?=.*([\[]FR[\]]|^FR$|France|\bFR\b|法国|法國|巴黎|🇫🇷))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "RU_02",
+      name: "🇷🇺 RU 0.20x",
+      filter: /(?=.*([\[]RU[\]]|^RU$|Russia|Russian[ _-]?Federation|\bRU\b|俄罗斯|俄羅斯|莫斯科|伯力|🇷🇺))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CA_02",
+      name: "🇨🇦 CA 0.20x",
+      filter: /(?=.*([\[]CA[\]]|^CA$|Canada|\bCA\b|加拿大|🇨🇦))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "AU_02",
+      name: "🇦🇺 AU 0.20x",
+      filter: /(?=.*([\[]AU[\]]|^AU$|Australia|\bAU\b|澳大利亚|澳洲|澳大利亞|🇦🇺))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "KR_02",
+      name: "🇰🇷 KR 0.20x",
+      filter: /(?=.*([\[]KR[\]]|^KR$|Korea|South[ _-]?Korea|\bKR\b|韩国|韓國|首尔|首爾|🇰🇷))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IT_02",
+      name: "🇮🇹 IT 0.20x",
+      filter: /(?=.*([\[]IT[\]]|^IT$|Italy|Italian|\bIT\b|意大利|義大利|米兰|米蘭|罗马|羅馬|🇮🇹))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "ES_02",
+      name: "🇪🇸 ES 0.20x",
+      filter: /(?=.*([\[]ES[\]]|^ES$|Spain|Spanish|\bES\b|西班牙|马德里|馬德里|🇪🇸))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NL_02",
+      name: "🇳🇱 NL 0.20x",
+      filter: /(?=.*([\[]NL[\]]|^NL$|Netherlands|Dutch|\bNL\b|荷兰|荷蘭|阿姆斯特丹|🇳🇱))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FI_02",
+      name: "🇫🇮 FI 0.20x",
+      filter: /(?=.*([\[]FI[\]]|^FI$|Finland|Finnish|\bFI\b|芬兰|芬蘭|赫尔辛基|赫爾辛基|🇫🇮))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NO_02",
+      name: "🇳🇴 NO 0.20x",
+      filter: /(?=.*([\[]NO[\]]|^NO$|Norway|Norwegian|\bNO\b|挪威|奥斯陆|奧斯陸|🇳🇴))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SE_02",
+      name: "🇸🇪 SE 0.20x",
+      filter: /(?=.*([\[]SE[\]]|^SE$|Sweden|Swedish|\bSE\b|瑞典|斯德哥尔摩|斯德哥爾摩|🇸🇪))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CH_02",
+      name: "🇨🇭 CH 0.20x",
+      filter: /(?=.*([\[]CH[\]]|^CH$|Switzerland|Swiss|\bCH\b|瑞士|苏黎世|蘇黎世|日内瓦|日內瓦|🇨🇭))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PL_02",
+      name: "🇵🇱 PL 0.20x",
+      filter: /(?=.*([\[]PL[\]]|^PL$|Poland|Polish|\bPL\b|波兰|波蘭|华沙|華沙|🇵🇱))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IN_02",
+      name: "🇮🇳 IN 0.20x",
+      filter: /(?=.*([\[]IN[\]]|^IN$|India|Indian|\bIN\b|印度|🇮🇳))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PH_02",
+      name: "🇵🇭 PH 0.20x",
+      filter: /(?=.*([\[]PH[\]]|^PH$|Philippines|Filipino|\bPH\b|菲律宾|菲律賓|马尼拉|馬尼拉|🇵🇭))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "VN_02",
+      name: "🇻🇳 VN 0.20x",
+      filter: /(?=.*([\[]VN[\]]|^VN$|Vietnam|Vietnamese|\bVN\b|越南|河内|河內|胡志明|🇻🇳))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MY_02",
+      name: "🇲🇾 MY 0.20x",
+      filter: /(?=.*([\[]MY[\]]|^MY$|Malaysia|Malaysian|\bMY\b|马来西亚|馬來西亞|吉隆坡|🇲🇾))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "US_05",
+      name: "🇺🇸 US 0.50x",
+      filter: /(?=.*([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SG_05",
+      name: "🇸🇬 SG 0.50x",
+      filter: /(?=.*([\[]SG[\]]|^SG$|Singapore|\bSG\b|新加坡|狮城|🇸🇬))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "HK_05",
+      name: "🇭🇰 HK 0.50x",
+      filter: /(?=.*([\[]HK[\]]|^HK$|Hong[ _-]?Kong|\bHK\b|香港|🇭🇰))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MO_05",
+      name: "🇲🇴 MO 0.50x",
+      filter: /(?=.*([\[]MO[\]]|^MO$|Macau|Macao|\bMO\b|澳门|澳門|🇲🇴))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "JP_05",
+      name: "🇯🇵 JP 0.50x",
+      filter: /(?=.*([\[]JP[\]]|^JP$|Japan|\bJP\b|日本|东京|大阪|🇯🇵))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "TW_05",
+      name: "🇹🇼 TW 0.50x",
+      filter: /(?=.*([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇨🇳|🇹🇼))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "UK_05",
+      name: "🇬🇧 UK 0.50x",
+      filter: /(?=.*([\[]UK[\]]|^UK$|United[ _-]?Kingdom|Britain|England|\bUK\b|英国|英國|伦敦|🇬🇧))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "DE_05",
+      name: "🇩🇪 DE 0.50x",
+      filter:/(?=.*([\[]DE[\]]|^DE$|Germany|Deutschland|\bDE\b|德国|德國|法兰克福|🇩🇪))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FR_05",
+      name: "🇫🇷 FR 0.50x",
+      filter: /(?=.*([\[]FR[\]]|^FR$|France|\bFR\b|法国|法國|巴黎|🇫🇷))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "RU_05",
+      name: "🇷🇺 RU 0.50x",
+      filter: /(?=.*([\[]RU[\]]|^RU$|Russia|Russian[ _-]?Federation|\bRU\b|俄罗斯|俄羅斯|莫斯科|伯力|🇷🇺))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CA_05",
+      name: "🇨🇦 CA 0.50x",
+      filter: /(?=.*([\[]CA[\]]|^CA$|Canada|\bCA\b|加拿大|🇨🇦))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "AU_05",
+      name: "🇦🇺 AU 0.50x",
+      filter: /(?=.*([\[]AU[\]]|^AU$|Australia|\bAU\b|澳大利亚|澳洲|澳大利亞|🇦🇺))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "KR_05",
+      name: "🇰🇷 KR 0.50x",
+      filter: /(?=.*([\[]KR[\]]|^KR$|Korea|South[ _-]?Korea|\bKR\b|韩国|韓國|首尔|首爾|🇰🇷))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IT_05",
+      name: "🇮🇹 IT 0.50x",
+      filter: /(?=.*([\[]IT[\]]|^IT$|Italy|Italian|\bIT\b|意大利|義大利|米兰|米蘭|罗马|羅馬|🇮🇹))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "ES_05",
+      name: "🇪🇸 ES 0.50x",
+      filter: /(?=.*([\[]ES[\]]|^ES$|Spain|Spanish|\bES\b|西班牙|马德里|馬德里|🇪🇸))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NL_05",
+      name: "🇳🇱 NL 0.50x",
+      filter: /(?=.*([\[]NL[\]]|^NL$|Netherlands|Dutch|\bNL\b|荷兰|荷蘭|阿姆斯特丹|🇳🇱))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FI_05",
+      name: "🇫🇮 FI 0.50x",
+      filter: /(?=.*([\[]FI[\]]|^FI$|Finland|Finnish|\bFI\b|芬兰|芬蘭|赫尔辛基|赫爾辛基|🇫🇮))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NO_05",
+      name: "🇳🇴 NO 0.50x",
+      filter: /(?=.*([\[]NO[\]]|^NO$|Norway|Norwegian|\bNO\b|挪威|奥斯陆|奧斯陸|🇳🇴))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SE_05",
+      name: "🇸🇪 SE 0.50x",
+      filter: /(?=.*([\[]SE[\]]|^SE$|Sweden|Swedish|\bSE\b|瑞典|斯德哥尔摩|斯德哥爾摩|🇸🇪))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CH_05",
+      name: "🇨🇭 CH 0.50x",
+      filter: /(?=.*([\[]CH[\]]|^CH$|Switzerland|Swiss|\bCH\b|瑞士|苏黎世|蘇黎世|日内瓦|日內瓦|🇨🇭))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PL_05",
+      name: "🇵🇱 PL 0.50x",
+      filter: /(?=.*([\[]PL[\]]|^PL$|Poland|Polish|\bPL\b|波兰|波蘭|华沙|華沙|🇵🇱))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IN_05",
+      name: "🇮🇳 IN 0.50x",
+      filter: /(?=.*([\[]IN[\]]|^IN$|India|Indian|\bIN\b|印度|🇮🇳))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PH_05",
+      name: "🇵🇭 PH 0.50x",
+      filter: /(?=.*([\[]PH[\]]|^PH$|Philippines|Filipino|\bPH\b|菲律宾|菲律賓|马尼拉|馬尼拉|🇵🇭))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "VN_05",
+      name: "🇻🇳 VN 0.50x",
+      filter: /(?=.*([\[]VN[\]]|^VN$|Vietnam|Vietnamese|\bVN\b|越南|河内|河內|胡志明|🇻🇳))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MY_05",
+      name: "🇲🇾 MY 0.50x",
+      filter: /(?=.*([\[]MY[\]]|^MY$|Malaysia|Malaysian|\bMY\b|马来西亚|馬來西亞|吉隆坡|🇲🇾))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "US",
+      name: "🇺🇸 US",
+      filter: /([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
       key: "SG",
       name: "🇸🇬 SG",
       filter: /([\[]SG[\]]|^SG$|Singapore|\bSG\b|新加坡|狮城|🇸🇬)/i,
@@ -574,14 +923,7 @@ function main(config) {
     {
       key: "TW",
       name: "🇹🇼 TW",
-      filter: /([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇹🇼)/i,
-      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
-    },
-
-    {
-      key: "US",
-      name: "🇺🇸 US",
-      filter: /([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸)/i,
+      filter: /([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇨🇳|🇹🇼)/i,
       icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
     },
 
@@ -784,9 +1126,7 @@ function main(config) {
     "Spotify",
     "TikTok",
     "Twitch",
-    "ChatGPT",
-    "Gemini",
-    "Claude",
+    "AI3",
     "Grok",
     "Meta",
     "Telegram",
@@ -868,12 +1208,24 @@ function main(config) {
   // ============================================================
 
   fixed.rules = [
+    // 屏蔽系统更新
+    "DOMAIN,updates-http.cdn-apple.com,REJECT",
+    "DOMAIN,xp.apple.com,REJECT",
+    "DOMAIN,gdmf.apple.com,REJECT",
+    "DOMAIN,mesu.apple.com,REJECT",
+    
+    // WebRTC 防泄露
+    "DOMAIN-KEYWORD,stun,REJECT",
+    "DOMAIN-KEYWORD,turn,REJECT",
+    "DOMAIN-KEYWORD,quic,REJECT",  
+    
+    
     "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
     "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
     "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
     "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
     "GEOIP,LAN,DIRECT,no-resolve",
-
+    
     // Apple Push 必须在普通 Apple / iCloud 规则之前
     "DOMAIN-SUFFIX,push.apple.com,Apple Push",
     "DOMAIN-SUFFIX,push-apple.com.akadns.net,Apple Push",
@@ -964,6 +1316,12 @@ function main(config) {
     "DOMAIN-SUFFIX,star.playback.edge.bamgrid.com,Disney+",
     "DOMAIN-SUFFIX,search-api-disney.bamgrid.com,Disney+",
 
+    // 守候影院emby
+    "DOMAIN-SUFFIX,test404.net,Emby",
+    "DOMAIN-SUFFIX,cn2gias.uk,Emby",
+    "DOMAIN-SUFFIX,array2026.cc,Emby",
+    "DOMAIN-SUFFIX,array2026.com,Emby",
+    
     // Emby
     "RULE-SET,Emby,Emby",
 
@@ -981,35 +1339,35 @@ function main(config) {
     "DOMAIN-SUFFIX,twitchsvc.net,Twitch",
 
     // OpenAi ChatGPT
-    "RULE-SET,OpenAI_Domain,ChatGPT",
-    "DOMAIN-SUFFIX,chatgpt.com,ChatGPT",
-    "DOMAIN,cdn.openaimerge.com,ChatGPT",
-    "DOMAIN,setup.auth.openai.com,ChatGPT",
-    "DOMAIN,cdn.workos.com,ChatGPT",
-    "DOMAIN,forwarder.workos.com,ChatGPT",
-    "DOMAIN,images.workoscdn.com,ChatGPT",
-    "DOMAIN,workos.imgix.net,ChatGPT",
-    "DOMAIN,setup.workos.com,ChatGPT",
-    "DOMAIN,ct.sendgrid.net,ChatGPT",
-    "DOMAIN,oaistatsig.com,ChatGPT",
-    "DOMAIN,rum.browser-intake-datadoghq.com,ChatGPT",
-    "DOMAIN,challenges.cloudflare.com,ChatGPT",
-    "DOMAIN-KEYWORD,openai,ChatGPT",
-    "IP-CIDR,64.23.132.171/32,ChatGPT",
-    "IP-ASN,20473,ChatGPT",
+    "RULE-SET,OpenAI_Domain,AI3",
+    "DOMAIN-SUFFIX,chatgpt.com,AI3",
+    "DOMAIN,cdn.openaimerge.com,AI3",
+    "DOMAIN,setup.auth.openai.com,AI3",
+    "DOMAIN,cdn.workos.com,AI3",
+    "DOMAIN,forwarder.workos.com,AI3",
+    "DOMAIN,images.workoscdn.com,AI3",
+    "DOMAIN,workos.imgix.net,AI3",
+    "DOMAIN,setup.workos.com,AI3",
+    "DOMAIN,ct.sendgrid.net,AI3",
+    "DOMAIN,oaistatsig.com,AI3",
+    "DOMAIN,rum.browser-intake-datadoghq.com,AI3",
+    "DOMAIN,challenges.cloudflare.com,AI3",
+    "DOMAIN-KEYWORD,openai,AI3",
+    "IP-CIDR,64.23.132.171/32,AI3",
+    "IP-ASN,20473,AI3",
 
     // Google Gemini
-    "RULE-SET,Gemini,Gemini",
-    "DOMAIN-SUFFIX,gemini.googleusercontent.com,Gemini",
+    "RULE-SET,Gemini,AI3",
+    "DOMAIN-SUFFIX,gemini.googleusercontent.com,AI3",
 
     // Anthropic Claude
-    "RULE-SET,Anthropic,Claude",
-    "RULE-SET,Anthropic_Domain,Claude",
-    "RULE-SET,Anthropic_IP,Claude",
-    "DOMAIN-SUFFIX,claude.ai,Claude",
-    "DOMAIN-SUFFIX,anthropic.com,Claude",
-    "DOMAIN-SUFFIX,claudeusercontent.com,Claude",
-    "DOMAIN-SUFFIX,claudeusercontent.com.cdn.cloudflare.net,Claude",
+    "RULE-SET,Anthropic,AI3",
+    "RULE-SET,Anthropic_Domain,AI3",
+    "RULE-SET,Anthropic_IP,AI3",
+    "DOMAIN-SUFFIX,claude.ai,AI3",
+    "DOMAIN-SUFFIX,anthropic.com,AI3",
+    "DOMAIN-SUFFIX,claudeusercontent.com,AI3",
+    "DOMAIN-SUFFIX,claudeusercontent.com.cdn.cloudflare.net,AI3",
 
     // Grok
     "DOMAIN-SUFFIX,grok.com,Grok",
