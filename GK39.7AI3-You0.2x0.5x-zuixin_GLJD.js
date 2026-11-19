@@ -1480,7 +1480,7 @@ function main(config) {
 
     // 中国大陆
     //"GEOSITE,CN,DIRECT",
-    "RULE-SET,ChinaMax_Domain,DIRECT",
+    "RULE-SET,ChinaMax_Domain,DIRECT,no-resolve",
     "GEOIP,CN,DIRECT,no-resolve",
 
     // 最终兜底
