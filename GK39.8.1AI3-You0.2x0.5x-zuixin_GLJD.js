@@ -115,7 +115,12 @@ function main(config) {
         "https://doh.pub/dns-query"
       ],
 
-      "nameserver-policy": {
+     "nameserver-policy": {
+        "geosite:tiktok": [
+          "https://dns.cloudflare.com/dns-query",
+          "https://dns.quad9.net/dns-query"
+        ],
+        
         "dns.cloudflare.com": [
           "1.1.1.1",
           "1.0.0.1"
