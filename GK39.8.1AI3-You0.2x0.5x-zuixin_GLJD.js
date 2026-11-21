@@ -152,8 +152,9 @@ function main(config) {
         "https://anycast.uncensoreddns.org/dns-query"
       ],
 
+      "fallback-lazy-query": true,
+      
       "fallback-filter": {
-        "fallback-lazy-query": true,
         "geoip": false,
         "geoip-code": "CN",
         "ipcidr": [
