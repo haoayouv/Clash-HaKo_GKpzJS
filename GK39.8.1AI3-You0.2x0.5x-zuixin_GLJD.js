@@ -126,6 +126,11 @@ function main(config) {
           "149.112.112.112"
         ],
 
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4"
+        ],
+
         "dns.alidns.com": [
           "223.5.5.5",
           "223.6.6.6"
@@ -148,7 +153,7 @@ function main(config) {
       ],
 
       "fallback-filter": {
-        "geoip": true,
+        "geoip": false,
         "geoip-code": "CN",
         "ipcidr": [
           "240.0.0.0/4",
