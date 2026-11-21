@@ -155,7 +155,7 @@ function main(config) {
       "fallback-lazy-query": true,
       
       "fallback-filter": {
-        "geoip": false,
+        "geoip": true,
         "geoip-code": "CN",
         "ipcidr": [
           "240.0.0.0/4",
