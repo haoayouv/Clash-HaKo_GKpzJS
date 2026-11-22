@@ -116,12 +116,52 @@ function main(config) {
       ],
 
      "nameserver-policy": {
-        "geosite:tiktok": [
+       "+.tiktok.com": [
+          "https://dns.cloudflare.com/dns-query",
+          "https://dns.quad9.net/dns-query"
+       ],
+       
+       "+.tiktokv.com": [
+          "https://dns.cloudflare.com/dns-query",
+          "https://dns.quad9.net/dns-query" 
+       ],
+       
+       "+.tiktokcdn.com": [
           "https://dns.cloudflare.com/dns-query",
           "https://dns.quad9.net/dns-query"
         ],
         
-        "dns.cloudflare.com": [
+       "+.apple.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ], 
+       
+       "+.icloud.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.icloud-content.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.apple-cloudkit.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.mzstatic.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.cdn-apple.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "dns.cloudflare.com": [
           "1.1.1.1",
           "1.0.0.1"
         ],
