@@ -371,7 +371,7 @@ function main(config) {
   fixed["proxy-groups"].push({
     "name": "AI3",
     "type": "select",
-    "icon": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ChatGPT4.png",
+    "icon": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Claude_02.png",
     "proxies": [
       
       "🔘 PROXY-Gate",
@@ -506,7 +506,7 @@ function main(config) {
   fixed["proxy-groups"].push({
     "name": "X",
     "type": "select",
-    "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/X.png",
+    "icon": "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/twitter(1).png",
     "proxies": [
       
       "🔘 PROXY-Gate",
