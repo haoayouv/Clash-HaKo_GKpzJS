@@ -1309,6 +1309,7 @@ function main(config) {
     "DOMAIN-SUFFIX,geminiweb-pa.clients6.google.com,AI3",
     //下方为各类规则集误匹配规则
     "DOMAIN-SUFFIX,doubao.com,DIRECT",
+    "DOMAIN-KEYWORD,doubao,DIRECT",
     // 广告 / 隐私
     "RULE-SET,Advertising,REJECT",
     "RULE-SET,Advertising_Domain,REJECT",
