@@ -1,0 +1,1839 @@
+/*
+ * 服务分类配置｜Hako版
+ * App设置说明：
+ * 1.使用覆写脚本后 请进入（工具）-（DNS查询）-清除两个缓存
+ * 2.使用覆写脚本后 在（更多）-（VPN）里面打开（包括所有网络）
+ * 11-22-2026
+ * Hako 会将当前选中的多个节点来源合并到 config.proxies。
+ * 本脚本不依赖任何 proxy-providers 名称。
+ *
+ * 结构：
+ * 1. 主策略组
+ * 2. 普通服务策略组
+ * 3. 根据实际节点动态生成地区 Auto
+ * 4. APNs-Fallback
+ * 5. Global-Fallback
+ * 6. Rules
+ * 7. Rule Providers
+ */
+
+function main(config) {
+  // Hako 当前选中的所有机场节点都会合并到 config.proxies。
+  const currentProxies = Array.isArray(config && config.proxies)
+    ? config.proxies
+    : [];
+
+  const currentProxyNames = currentProxies
+    .map(p =>
+      typeof p === "string"
+        ? p
+        : (p && typeof p.name === "string" ? p.name : null)
+    )
+    .filter(Boolean);
+    
+      // ============================================================
+  // 节点名称过滤
+  //
+  // 仅排除中文机场杂项信息。
+  // 不修改原始 config.proxies。
+  // ============================================================
+
+  const excludedProxyName = [
+    /套餐/,
+    /剩余流量/,
+    /流量剩余/,
+    /流量用量/,
+    /已用流量/,
+    /总流量/,
+    /流量重置/,
+    /到期/,
+    /过期/,
+    /有效期/,
+    /剩余时间/,
+    /官网/,
+    /续费/,
+    /公告/,
+    /通知/,
+    /客服/,
+    /工单/,
+    /邀请链接/,
+    /使用说明/,
+    /天/
+  ];
+
+  const usableProxyNames = currentProxyNames.filter(name =>
+    !excludedProxyName.some(pattern => pattern.test(name))
+  );
+
+  const fixed = {
+    "mixed-port": 7890,
+    "allow-lan": false,
+    "bind-address": "*",
+    "mode": "rule",
+    "log-level": "info",
+    "external-controller": "127.0.0.1:9090",
+    "unified-delay": true,
+    "tcp-concurrent": true,
+    "ipv6": true,
+
+    "tun": {
+      "enable": true,
+      "stack": "gvisor",
+      "auto-route": true,
+      "auto-detect-interface": true,
+      "strict-route": true,
+      "dns-hijack": [
+        "any:53"
+      ]
+    },
+
+    "dns": {
+      "enable": true,
+      "respect-rules": true,
+      "ipv6": true,
+      "prefer-h3": false,
+      "enhanced-mode": "fake-ip",
+      "fake-ip-range": "198.18.0.1/16",
+
+      "default-nameserver": [
+        "223.5.5.5",
+        "119.29.29.29",
+        "2400:3200::1"
+      ],
+
+      "nameserver": [
+        "https://dns.cloudflare.com/dns-query",
+        "https://dns.quad9.net/dns-query"
+      ],
+
+      "proxy-server-nameserver-policy": null,
+
+      "proxy-server-nameserver": [
+        "https://dns.alidns.com/dns-query",
+        "https://doh.pub/dns-query"
+      ],
+
+      "direct-nameserver": [
+        "https://dns.alidns.com/dns-query",
+        "https://doh.pub/dns-query"
+      ],
+
+     "nameserver-policy": {
+       "+.tiktok.com": [
+          "https://dns.cloudflare.com/dns-query",
+          "https://dns.quad9.net/dns-query"
+       ],
+       
+       "+.tiktokv.com": [
+          "https://dns.cloudflare.com/dns-query",
+          "https://dns.quad9.net/dns-query" 
+       ],
+       
+       "+.tiktokcdn.com": [
+          "https://dns.cloudflare.com/dns-query",
+          "https://dns.quad9.net/dns-query"
+        ],
+        
+       "+.apple.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ], 
+       
+       "+.icloud.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.icloud-content.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.apple-cloudkit.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.mzstatic.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "+.cdn-apple.com": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+       ],
+       
+       "dns.cloudflare.com": [
+          "1.1.1.1",
+          "1.0.0.1"
+        ],
+
+        "dns.quad9.net": [
+          "9.9.9.9",
+          "149.112.112.112"
+        ],
+
+        "dns.google": [
+          "8.8.8.8",
+          "8.8.4.4"
+        ],
+
+        "dns.alidns.com": [
+          "223.5.5.5",
+          "223.6.6.6"
+        ],
+
+        "doh.pub": [
+          "1.12.12.12",
+          "120.53.53.53"
+        ],
+
+        "geosite:cn": [
+          "https://dns.alidns.com/dns-query",
+          "https://doh.pub/dns-query"
+        ]
+      },
+
+      "fallback": [
+        "https://dns.google/dns-query",
+        "https://anycast.uncensoreddns.org/dns-query"
+      ],
+
+      "fallback-lazy-query": true,
+      
+      "fallback-filter": {
+        "geoip": false,
+        "geoip-code": "CN",
+        "ipcidr": [
+          "240.0.0.0/4",
+          "127.0.0.0/8",
+          "0.0.0.0/32",
+          "::/128",
+          "::1/128",
+          "fc00::/7",
+          "fe80::/10",
+          "2001:db8::/32"
+        ]
+      },
+
+      "fake-ip-filter": [
+        "geosite:cn",
+        "*.lan",
+        "*.local",
+        "localhost",
+        "*.msftconnecttest.com",
+        "*.msftncsi.com",
+        "*.msidentity.com",
+        "captive.apple.com",
+        "*.push.apple.com",
+        "stun.*",
+        "+.stun.*.*",
+        "+.stun.*.*.*",
+        "+.stun.*.*.*.*",
+        "+.stun.*.*.*.*.*",
+        "speedtest.net"
+      ]
+    },
+
+    "profile": {
+      "store-selected": true,
+      "store-fake-ip": true
+    }
+  };
+  // ============================================================
+  // 节点池
+  // ============================================================
+
+  fixed.proxies = currentProxies;
+  fixed["proxy-groups"] = [];
+
+  // ============================================================
+  // 1. 主策略组
+  //
+  // Auto 组故意不在这里生成。
+  // Auto 会在所有普通服务策略组之后生成。
+  // ============================================================
+
+  fixed["proxy-groups"].push(
+    {
+      "name": "🔘 PROXY-Gate",
+      "type": "select",
+      "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
+      "proxies": [
+        "🖥️ All-Nodes",
+        "DIRECT"
+      ]
+    },
+
+    {
+      "name": "🖥️ All-Nodes",
+      "type": "select",
+      "proxies": usableProxyNames.slice(),
+      "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Server.png"
+    },
+
+    {
+      "name": "Apple Push",
+      "type": "fallback",
+      "icon": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/refs/heads/main/Ti/applepush.png",
+      "proxies": [
+        "APNs-Fallback",
+        "DIRECT"
+      ],
+      "url": "https://captive.apple.com/hotspot-detect.html",
+      "interval": 300
+    }
+  );
+
+  // ============================================================
+  // 2. 普通服务策略组
+  //
+  // 这里暂时只放 All-Nodes / PROXY-Gate / DIRECT。
+  // 后面检测完节点地区后，再把实际存在的 Auto 组插入。
+  //
+  // ============================================================
+
+  fixed["proxy-groups"].push({
+    "name": "YouTube",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Netflix",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Netflix.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Disney+",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Disney+.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Emby",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Spotify",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Spotify.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "TikTok",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/TikTok.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Twitch",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Twitch.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "AI3",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/claude(1).png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Grok",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Grok.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  // ============================================================
+  //
+  // Facebook / Instagram / Threads / Meta AI / Muse / WhatsApp
+  // 统一使用 Meta 策略组。
+  // ============================================================
+
+  fixed["proxy-groups"].push({
+    "name": "Meta",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/refs/heads/main/Ti/Meta.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Telegram",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "LINE",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Line.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  // ============================================================
+  // Microsoft
+  //
+  // Microsoft / Copilot 共用 Microsoft 策略组。
+  // ============================================================
+
+  fixed["proxy-groups"].push({
+    "name": "Microsoft",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Google",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/refs/heads/main/Ti/Google.PNG",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  // ============================================================
+  // Apple
+  // ============================================================
+
+  fixed["proxy-groups"].push({
+    "name": "Apple",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_2.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  // ============================================================
+  // iCloud
+  //
+  // 独立于 Apple 策略组。
+  // 规则来源：
+  // MRS/iCloud.mrs
+  // ============================================================
+
+  fixed["proxy-groups"].push({
+    "name": "iCloud",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/iCloud.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Amazon",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Amazon.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+
+  fixed["proxy-groups"].push({
+    "name": "X",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/twitter(1).png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Github",
+    "type": "select",
+    "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/GitHub.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+  fixed["proxy-groups"].push({
+    "name": "Speedtest",
+    "type": "select",
+    "icon": "https://cdn.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+
+
+  // ============================================================
+  // Fallback/Auto全地区策略组
+  // ============================================================
+
+  fixed["proxy-groups"].push({
+    name: "APNs-Fallback",
+    type: "fallback",
+    proxies: [],
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available_1.png",
+    url: "https://captive.apple.com/hotspot-detect.html",
+    interval: 300
+  });
+
+  fixed["proxy-groups"].push({
+    name: "🌍 Global-Fallback",
+    type: "fallback",
+    proxies: [],
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available_1.png",
+    url: "https://www.gstatic.com/generate_204",
+    interval: 600
+  });
+
+  fixed["proxy-groups"].push({
+    name: "🌍 Global-Auto",
+    type: "url-test",
+    proxies: [],
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png",
+    url: "https://www.gstatic.com/generate_204",
+    interval: 600,
+    tolerance: 50
+  });
+
+  // ============================================================
+  // 3. 地区 Auto
+  //
+  // 直接读取 Hako 合并后的完整 config.proxies。
+  //
+  //
+  // 所有 Auto 组统一使用 Auto.png 图标。
+  // ============================================================
+
+  const regionGroups = [
+    {
+      key: "02x",
+      name: "0️⃣2️⃣ 0.20",
+      filter: /0\.20x|0\.2x/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.2.png"
+    },
+
+    {
+      key: "05x",
+      name: "0️⃣5️⃣ 0.50x",
+      filter: /0\.50x|0\.5x/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/mini/x0.5.png"
+    },
+    
+    {
+      key: "US_02",
+      name: "🇺🇸 US 0.20x",
+      filter: /(?=.*([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SG_02",
+      name: "🇸🇬 SG 0.20x",
+      filter: /(?=.*([\[]SG[\]]|^SG$|Singapore|\bSG\b|新加坡|狮城|🇸🇬))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "HK_02",
+      name: "🇭🇰 HK 0.20x",
+      filter: /(?=.*([\[]HK[\]]|^HK$|Hong[ _-]?Kong|\bHK\b|香港|🇭🇰))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MO_02",
+      name: "🇲🇴 MO 0.20x",
+      filter: /(?=.*([\[]MO[\]]|^MO$|Macau|Macao|\bMO\b|澳门|澳門|🇲🇴))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "JP_02",
+      name: "🇯🇵 JP 0.20x",
+      filter: /(?=.*([\[]JP[\]]|^JP$|Japan|\bJP\b|日本|东京|大阪|🇯🇵))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "TW_02",
+      name: "🇹🇼 TW 0.20x",
+      filter: /(?=.*([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇨🇳|🇹🇼))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "UK_02",
+      name: "🇬🇧 UK 0.20x",
+      filter: /(?=.*([\[]UK[\]]|^UK$|United[ _-]?Kingdom|Britain|England|\bUK\b|英国|英國|伦敦|🇬🇧))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "DE_02",
+      name: "🇩🇪 DE 0.20x",
+      filter:/(?=.*([\[]DE[\]]|^DE$|Germany|Deutschland|\bDE\b|德国|德國|法兰克福|🇩🇪))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FR_02",
+      name: "🇫🇷 FR 0.20x",
+      filter: /(?=.*([\[]FR[\]]|^FR$|France|\bFR\b|法国|法國|巴黎|🇫🇷))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "RU_02",
+      name: "🇷🇺 RU 0.20x",
+      filter: /(?=.*([\[]RU[\]]|^RU$|Russia|Russian[ _-]?Federation|\bRU\b|俄罗斯|俄羅斯|莫斯科|伯力|🇷🇺))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CA_02",
+      name: "🇨🇦 CA 0.20x",
+      filter: /(?=.*([\[]CA[\]]|^CA$|Canada|\bCA\b|加拿大|🇨🇦))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "AU_02",
+      name: "🇦🇺 AU 0.20x",
+      filter: /(?=.*([\[]AU[\]]|^AU$|Australia|\bAU\b|澳大利亚|澳洲|澳大利亞|🇦🇺))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "KR_02",
+      name: "🇰🇷 KR 0.20x",
+      filter: /(?=.*([\[]KR[\]]|^KR$|Korea|South[ _-]?Korea|\bKR\b|韩国|韓國|首尔|首爾|🇰🇷))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IT_02",
+      name: "🇮🇹 IT 0.20x",
+      filter: /(?=.*([\[]IT[\]]|^IT$|Italy|Italian|\bIT\b|意大利|義大利|米兰|米蘭|罗马|羅馬|🇮🇹))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "ES_02",
+      name: "🇪🇸 ES 0.20x",
+      filter: /(?=.*([\[]ES[\]]|^ES$|Spain|Spanish|\bES\b|西班牙|马德里|馬德里|🇪🇸))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NL_02",
+      name: "🇳🇱 NL 0.20x",
+      filter: /(?=.*([\[]NL[\]]|^NL$|Netherlands|Dutch|\bNL\b|荷兰|荷蘭|阿姆斯特丹|🇳🇱))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FI_02",
+      name: "🇫🇮 FI 0.20x",
+      filter: /(?=.*([\[]FI[\]]|^FI$|Finland|Finnish|\bFI\b|芬兰|芬蘭|赫尔辛基|赫爾辛基|🇫🇮))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NO_02",
+      name: "🇳🇴 NO 0.20x",
+      filter: /(?=.*([\[]NO[\]]|^NO$|Norway|Norwegian|\bNO\b|挪威|奥斯陆|奧斯陸|🇳🇴))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SE_02",
+      name: "🇸🇪 SE 0.20x",
+      filter: /(?=.*([\[]SE[\]]|^SE$|Sweden|Swedish|\bSE\b|瑞典|斯德哥尔摩|斯德哥爾摩|🇸🇪))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CH_02",
+      name: "🇨🇭 CH 0.20x",
+      filter: /(?=.*([\[]CH[\]]|^CH$|Switzerland|Swiss|\bCH\b|瑞士|苏黎世|蘇黎世|日内瓦|日內瓦|🇨🇭))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PL_02",
+      name: "🇵🇱 PL 0.20x",
+      filter: /(?=.*([\[]PL[\]]|^PL$|Poland|Polish|\bPL\b|波兰|波蘭|华沙|華沙|🇵🇱))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IN_02",
+      name: "🇮🇳 IN 0.20x",
+      filter: /(?=.*([\[]IN[\]]|^IN$|India|Indian|\bIN\b|印度|🇮🇳))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PH_02",
+      name: "🇵🇭 PH 0.20x",
+      filter: /(?=.*([\[]PH[\]]|^PH$|Philippines|Filipino|\bPH\b|菲律宾|菲律賓|马尼拉|馬尼拉|🇵🇭))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "VN_02",
+      name: "🇻🇳 VN 0.20x",
+      filter: /(?=.*([\[]VN[\]]|^VN$|Vietnam|Vietnamese|\bVN\b|越南|河内|河內|胡志明|🇻🇳))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MY_02",
+      name: "🇲🇾 MY 0.20x",
+      filter: /(?=.*([\[]MY[\]]|^MY$|Malaysia|Malaysian|\bMY\b|马来西亚|馬來西亞|吉隆坡|🇲🇾))(?=.*(?:0.20x|0.2x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "US_05",
+      name: "🇺🇸 US 0.50x",
+      filter: /(?=.*([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SG_05",
+      name: "🇸🇬 SG 0.50x",
+      filter: /(?=.*([\[]SG[\]]|^SG$|Singapore|\bSG\b|新加坡|狮城|🇸🇬))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "HK_05",
+      name: "🇭🇰 HK 0.50x",
+      filter: /(?=.*([\[]HK[\]]|^HK$|Hong[ _-]?Kong|\bHK\b|香港|🇭🇰))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MO_05",
+      name: "🇲🇴 MO 0.50x",
+      filter: /(?=.*([\[]MO[\]]|^MO$|Macau|Macao|\bMO\b|澳门|澳門|🇲🇴))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "JP_05",
+      name: "🇯🇵 JP 0.50x",
+      filter: /(?=.*([\[]JP[\]]|^JP$|Japan|\bJP\b|日本|东京|大阪|🇯🇵))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "TW_05",
+      name: "🇹🇼 TW 0.50x",
+      filter: /(?=.*([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇨🇳|🇹🇼))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "UK_05",
+      name: "🇬🇧 UK 0.50x",
+      filter: /(?=.*([\[]UK[\]]|^UK$|United[ _-]?Kingdom|Britain|England|\bUK\b|英国|英國|伦敦|🇬🇧))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "DE_05",
+      name: "🇩🇪 DE 0.50x",
+      filter:/(?=.*([\[]DE[\]]|^DE$|Germany|Deutschland|\bDE\b|德国|德國|法兰克福|🇩🇪))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FR_05",
+      name: "🇫🇷 FR 0.50x",
+      filter: /(?=.*([\[]FR[\]]|^FR$|France|\bFR\b|法国|法國|巴黎|🇫🇷))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "RU_05",
+      name: "🇷🇺 RU 0.50x",
+      filter: /(?=.*([\[]RU[\]]|^RU$|Russia|Russian[ _-]?Federation|\bRU\b|俄罗斯|俄羅斯|莫斯科|伯力|🇷🇺))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CA_05",
+      name: "🇨🇦 CA 0.50x",
+      filter: /(?=.*([\[]CA[\]]|^CA$|Canada|\bCA\b|加拿大|🇨🇦))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "AU_05",
+      name: "🇦🇺 AU 0.50x",
+      filter: /(?=.*([\[]AU[\]]|^AU$|Australia|\bAU\b|澳大利亚|澳洲|澳大利亞|🇦🇺))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "KR_05",
+      name: "🇰🇷 KR 0.50x",
+      filter: /(?=.*([\[]KR[\]]|^KR$|Korea|South[ _-]?Korea|\bKR\b|韩国|韓國|首尔|首爾|🇰🇷))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IT_05",
+      name: "🇮🇹 IT 0.50x",
+      filter: /(?=.*([\[]IT[\]]|^IT$|Italy|Italian|\bIT\b|意大利|義大利|米兰|米蘭|罗马|羅馬|🇮🇹))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "ES_05",
+      name: "🇪🇸 ES 0.50x",
+      filter: /(?=.*([\[]ES[\]]|^ES$|Spain|Spanish|\bES\b|西班牙|马德里|馬德里|🇪🇸))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NL_05",
+      name: "🇳🇱 NL 0.50x",
+      filter: /(?=.*([\[]NL[\]]|^NL$|Netherlands|Dutch|\bNL\b|荷兰|荷蘭|阿姆斯特丹|🇳🇱))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FI_05",
+      name: "🇫🇮 FI 0.50x",
+      filter: /(?=.*([\[]FI[\]]|^FI$|Finland|Finnish|\bFI\b|芬兰|芬蘭|赫尔辛基|赫爾辛基|🇫🇮))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NO_05",
+      name: "🇳🇴 NO 0.50x",
+      filter: /(?=.*([\[]NO[\]]|^NO$|Norway|Norwegian|\bNO\b|挪威|奥斯陆|奧斯陸|🇳🇴))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SE_05",
+      name: "🇸🇪 SE 0.50x",
+      filter: /(?=.*([\[]SE[\]]|^SE$|Sweden|Swedish|\bSE\b|瑞典|斯德哥尔摩|斯德哥爾摩|🇸🇪))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CH_05",
+      name: "🇨🇭 CH 0.50x",
+      filter: /(?=.*([\[]CH[\]]|^CH$|Switzerland|Swiss|\bCH\b|瑞士|苏黎世|蘇黎世|日内瓦|日內瓦|🇨🇭))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PL_05",
+      name: "🇵🇱 PL 0.50x",
+      filter: /(?=.*([\[]PL[\]]|^PL$|Poland|Polish|\bPL\b|波兰|波蘭|华沙|華沙|🇵🇱))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IN_05",
+      name: "🇮🇳 IN 0.50x",
+      filter: /(?=.*([\[]IN[\]]|^IN$|India|Indian|\bIN\b|印度|🇮🇳))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PH_05",
+      name: "🇵🇭 PH 0.50x",
+      filter: /(?=.*([\[]PH[\]]|^PH$|Philippines|Filipino|\bPH\b|菲律宾|菲律賓|马尼拉|馬尼拉|🇵🇭))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "VN_05",
+      name: "🇻🇳 VN 0.50x",
+      filter: /(?=.*([\[]VN[\]]|^VN$|Vietnam|Vietnamese|\bVN\b|越南|河内|河內|胡志明|🇻🇳))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MY_05",
+      name: "🇲🇾 MY 0.50x",
+      filter: /(?=.*([\[]MY[\]]|^MY$|Malaysia|Malaysian|\bMY\b|马来西亚|馬來西亞|吉隆坡|🇲🇾))(?=.*(?:0.50x|0.5x))/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "US",
+      name: "🇺🇸 US",
+      filter: /([\[]US[\]]|^US$|USA|United[ _-]?States|\bUS\b|美国|美國|🇺🇸)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SG",
+      name: "🇸🇬 SG",
+      filter: /([\[]SG[\]]|^SG$|Singapore|\bSG\b|新加坡|狮城|🇸🇬)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "HK",
+      name: "🇭🇰 HK",
+      filter: /([\[]HK[\]]|^HK$|Hong[ _-]?Kong|\bHK\b|香港|🇭🇰)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MO",
+      name: "🇲🇴 MO",
+      filter: /([\[]MO[\]]|^MO$|Macau|Macao|\bMO\b|澳门|澳門|🇲🇴)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "JP",
+      name: "🇯🇵 JP",
+      filter: /([\[]JP[\]]|^JP$|Japan|\bJP\b|日本|东京|大阪|🇯🇵)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "TW",
+      name: "🇹🇼 TW",
+      filter: /([\[]TW[\]]|^TW$|Taiwan|Taibei|Taipei|\bTW\b|台湾|臺灣|台北|高雄|🇨🇳|🇹🇼)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "UK",
+      name: "🇬🇧 UK",
+      filter: /([\[]UK[\]]|^UK$|United[ _-]?Kingdom|Britain|England|\bUK\b|英国|英國|伦敦|🇬🇧)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "DE",
+      name: "🇩🇪 DE",
+      filter: /([\[]DE[\]]|^DE$|Germany|Deutschland|\bDE\b|德国|德國|法兰克福|🇩🇪)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FR",
+      name: "🇫🇷 FR",
+      filter: /([\[]FR[\]]|^FR$|France|\bFR\b|法国|法國|巴黎|🇫🇷)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "RU",
+      name: "🇷🇺 RU",
+      filter: /([\[]RU[\]]|^RU$|Russia|Russian[ _-]?Federation|\bRU\b|俄罗斯|俄羅斯|莫斯科|伯力|🇷🇺)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CA",
+      name: "🇨🇦 CA",
+      filter: /([\[]CA[\]]|^CA$|Canada|\bCA\b|加拿大|🇨🇦)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "AU",
+      name: "🇦🇺 AU",
+      filter: /([\[]AU[\]]|^AU$|Australia|\bAU\b|澳大利亚|澳洲|澳大利亞|🇦🇺)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "KR",
+      name: "🇰🇷 KR",
+      filter: /([\[]KR[\]]|^KR$|Korea|South[ _-]?Korea|\bKR\b|韩国|韓國|首尔|首爾|🇰🇷)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IT",
+      name: "🇮🇹 IT",
+      filter: /([\[]IT[\]]|^IT$|Italy|Italian|\bIT\b|意大利|義大利|米兰|米蘭|罗马|羅馬|🇮🇹)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "ES",
+      name: "🇪🇸 ES",
+      filter: /([\[]ES[\]]|^ES$|Spain|Spanish|\bES\b|西班牙|马德里|馬德里|🇪🇸)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NL",
+      name: "🇳🇱 NL",
+      filter: /([\[]NL[\]]|^NL$|Netherlands|Dutch|\bNL\b|荷兰|荷蘭|阿姆斯特丹|🇳🇱)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "FI",
+      name: "🇫🇮 FI",
+      filter: /([\[]FI[\]]|^FI$|Finland|Finnish|\bFI\b|芬兰|芬蘭|赫尔辛基|赫爾辛基|🇫🇮)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "NO",
+      name: "🇳🇴 NO",
+      filter: /([\[]NO[\]]|^NO$|Norway|Norwegian|\bNO\b|挪威|奥斯陆|奧斯陸|🇳🇴)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "SE",
+      name: "🇸🇪 SE",
+      filter: /([\[]SE[\]]|^SE$|Sweden|Swedish|\bSE\b|瑞典|斯德哥尔摩|斯德哥爾摩|🇸🇪)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "CH",
+      name: "🇨🇭 CH",
+      filter: /([\[]CH[\]]|^CH$|Switzerland|Swiss|\bCH\b|瑞士|苏黎世|蘇黎世|日内瓦|日內瓦|🇨🇭)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PL",
+      name: "🇵🇱 PL",
+      filter: /([\[]PL[\]]|^PL$|Poland|Polish|\bPL\b|波兰|波蘭|华沙|華沙|🇵🇱)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "IN",
+      name: "🇮🇳 IN",
+      filter: /([\[]IN[\]]|^IN$|India|Indian|\bIN\b|印度|🇮🇳)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "PH",
+      name: "🇵🇭 PH",
+      filter: /([\[]PH[\]]|^PH$|Philippines|Filipino|\bPH\b|菲律宾|菲律賓|马尼拉|馬尼拉|🇵🇭)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "VN",
+      name: "🇻🇳 VN",
+      filter: /([\[]VN[\]]|^VN$|Vietnam|Vietnamese|\bVN\b|越南|河内|河內|胡志明|🇻🇳)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    },
+
+    {
+      key: "MY",
+      name: "🇲🇾 MY",
+      filter: /([\[]MY[\]]|^MY$|Malaysia|Malaysian|\bMY\b|马来西亚|馬來西亞|吉隆坡|🇲🇾)/i,
+      icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png"
+    }
+  ];
+
+  const existingRegionalAutos = [];
+
+  regionGroups.forEach(region => {
+    const matched = usableProxyNames.filter(
+  name => region.filter.test(name)
+  );
+
+    const autoName = region.name + "-Auto";
+
+    // 只要有 1 个及以上节点，就生成该地区 Auto组
+    if (matched.length < 1) {
+      return;
+    }
+
+    fixed["proxy-groups"].push({
+      name: autoName,
+      type: "url-test",
+      proxies: matched,
+      icon: region.icon,
+      url: "https://www.gstatic.com/generate_204",
+      interval: 900,
+      tolerance: 50
+    });
+
+    existingRegionalAutos.push(autoName);
+  });
+
+  // ============================================================
+  // 4. 将实际存在的 Auto 组加入服务策略组
+  //
+  // 顺序固定为：
+  // 🔘 PROXY-Gate
+  // 🖥️ All-Nodes
+  // 🌍 Global-Fallback
+  // 🌍 Global-Auto
+  // 🇺🇸 US-Auto
+  // 🇸🇬 SG-Auto
+  // ...
+  // PROXY-Gate
+  // DIRECT
+  //
+  // Global-Fallback 是用户主动选择的跨地区容灾模式。
+  // ============================================================
+
+  const serviceProxyChoices = [
+    "🔘 PROXY-Gate",
+    ...(existingRegionalAutos.length
+      ? [
+          "🖥️ All-Nodes",
+          "🌍 Global-Fallback",
+          "🌍 Global-Auto"
+         ]
+      : []),
+    ...existingRegionalAutos,
+    "DIRECT"
+  ];
+
+  const serviceGroupNames = [
+    "YouTube",
+    "Netflix",
+    "Disney+",
+    "Emby",
+    "Spotify",
+    "TikTok",
+    "Twitch",
+    "AI3",
+    "Grok",
+    "Meta",
+    "Telegram",
+    "LINE",
+    "Microsoft",
+    "Google",
+    "Apple",
+    "iCloud",
+    "Amazon",
+    "X",
+    "Github",
+    "Speedtest"
+  ];
+
+  fixed["proxy-groups"].forEach(group => {
+    if (serviceGroupNames.includes(group.name)) {
+      group.proxies = serviceProxyChoices.slice();
+    }
+  });
+
+  // ============================================================
+  // 5. PROXY-Gate
+  //
+  // 顺序固定为：
+  //
+  // 🌍 Global-Fallback
+  // 🌍 Global-Auto
+  // 🇺🇸 US-Auto
+  // 🇸🇬 SG-Auto
+  // ...
+  // 🖥️ All-Nodes
+  // DIRECT
+  // ============================================================
+
+  const proxyGate = fixed["proxy-groups"].find(
+    group => group.name === "🔘 PROXY-Gate"
+  );
+
+  if (proxyGate) {
+    proxyGate.proxies = [
+      "🌍 Global-Fallback",
+      ...(existingRegionalAutos.length
+        ? [
+            "🌍 Global-Auto",
+           ]
+        : []),
+      ...existingRegionalAutos,
+      "🖥️ All-Nodes",
+      "DIRECT"
+    ];
+  }
+
+  // ============================================================
+  // 7. Global-Fallback / Global-Auto
+  //
+  // 两个组均引用所有实际生成的地区 Auto。
+  //
+  // Global-Fallback：跨地区故障转移
+  // Global-Auto：跨地区自动测速，选择最快地区
+  // ============================================================
+
+  // 更新 Fallback / Auto 组的地区节点引用
+  // ============================================================
+
+  const fallbackNames = [
+    "APNs-Fallback",
+    "🌍 Global-Fallback",
+    "🌍 Global-Auto"
+  ];
+
+  fixed["proxy-groups"].forEach(group => {
+    if (fallbackNames.includes(group.name)) {
+      group.proxies = existingRegionalAutos.slice();
+    }
+  });
+  
+  // ============================================================
+  // Rules
+  // ============================================================
+
+  fixed.rules = [
+    // 屏蔽系统更新
+    "DOMAIN,updates-http.cdn-apple.com,REJECT",
+    "DOMAIN,xp.apple.com,REJECT",
+    "DOMAIN,gdmf.apple.com,REJECT",
+    "DOMAIN,mesu.apple.com,REJECT",
+    
+    // WebRTC 防泄露
+    "DOMAIN-KEYWORD,stun,REJECT",
+    "DOMAIN-KEYWORD,turn,REJECT",
+    "DOMAIN-KEYWORD,quic,REJECT",  
+    
+    
+    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+    "GEOIP,LAN,DIRECT,no-resolve",
+    
+    // Apple Push 必须在普通 Apple / iCloud 规则之前
+    "DOMAIN-SUFFIX,push.apple.com,Apple Push",
+    "DOMAIN-SUFFIX,push-apple.com.akadns.net,Apple Push",
+    "DOMAIN-KEYWORD,apple.com.edgekey.net,Apple Push",
+
+    "IP-CIDR,17.249.0.0/16,Apple Push,no-resolve",
+    "IP-CIDR,17.252.0.0/16,Apple Push,no-resolve",
+    "IP-CIDR,17.57.144.0/22,Apple Push,no-resolve",
+    "IP-CIDR,17.188.128.0/18,Apple Push,no-resolve",
+    "IP-CIDR,17.188.20.0/23,Apple Push,no-resolve",
+
+    "IP-CIDR6,2620:149:a44::/48,Apple Push,no-resolve",
+    "IP-CIDR6,2403:300:a42::/48,Apple Push,no-resolve",
+    "IP-CIDR6,2403:300:a51::/48,Apple Push,no-resolve",
+    "IP-CIDR6,2a01:b740:a42::/48,Apple Push,no-resolve",
+
+    //下方为广告/隐私规则集误拦截的规则
+    "DOMAIN,hatch.metaaivm.com,Meta",
+    "DOMAIN-SUFFIX,ilce.alicdn.com,DIRECT",
+    "DOMAIN-SUFFIX,geminiweb-pa.clients6.google.com,AI3",
+    //下方为各类规则集误匹配规则
+    "DOMAIN-SUFFIX,doubao.com,DIRECT",
+    // 广告 / 隐私
+    "RULE-SET,Advertising,REJECT",
+    "RULE-SET,Advertising_Domain,REJECT",
+    "RULE-SET,Advertising_iP,REJECT",
+    "RULE-SET,ACL4SSR_BanAD,REJECT",
+    "RULE-SET,ACL4SSR_BanProgramAD,REJECT",
+    "RULE-SET,ACL4SSR_BanProgramAD_iP,REJECT",
+    
+    // 加密货币App
+    "DOMAIN-SUFFIX,aicoin.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,coinbase.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,binance.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,kraken.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,crypto.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,okx.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,bybit.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,bitget.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,metamask.io,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,phantom.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,trustwallet.com,🔘 PROXY-Gate",
+    "DOMAIN-SUFFIX,ledger.com,🔘 PROXY-Gate",
+
+    // YouTube
+    "DOMAIN-SUFFIX,youtube.com,YouTube",
+    "DOMAIN-SUFFIX,youtube,YouTube",
+    "DOMAIN-SUFFIX,youtu.be,YouTube",
+    "DOMAIN-SUFFIX,yt.be,YouTube",
+    // music.youtube.com 已由 youtube.com 覆盖
+    "DOMAIN-SUFFIX,googlevideo.com,YouTube",
+    "DOMAIN-SUFFIX,wide-youtube.l.google.com,YouTube",
+    "DOMAIN-SUFFIX,video.google.com,YouTube",
+    "DOMAIN-SUFFIX,yt-video-upload.l.google.com,YouTube",
+    "DOMAIN-SUFFIX,ytimg.com,YouTube",
+    "DOMAIN-SUFFIX,ytimg.l.google.com,YouTube",
+    "DOMAIN-SUFFIX,ggpht.com,YouTube",
+    "DOMAIN-SUFFIX,ggpht.cn,YouTube",
+    "DOMAIN,yt3.ggpht.com,YouTube",
+    "DOMAIN,yt3.googleusercontent.com,YouTube",
+    "DOMAIN-SUFFIX,youtubei.googleapis.com,YouTube",
+    "DOMAIN-SUFFIX,youtube.googleapis.com,YouTube",
+    "DOMAIN-SUFFIX,youtubeembeddedplayer.googleapis.com,YouTube",
+    "DOMAIN-SUFFIX,youtube-nocookie.com,YouTube",
+    "DOMAIN-SUFFIX,youtube-ui.l.google.com,YouTube",
+    "DOMAIN-SUFFIX,withyoutube.com,YouTube",
+    "DOMAIN-SUFFIX,youtubeeducation.com,YouTube",
+    "DOMAIN-SUFFIX,youtubekids.com,YouTube",
+    "DOMAIN-SUFFIX,youtubegaming.com,YouTube",
+    "DOMAIN-SUFFIX,youtubefanfest.com,YouTube",
+    "DOMAIN-SUFFIX,youtubego.com,YouTube",
+    "DOMAIN-SUFFIX,youtubemobilesupport.com,YouTube",
+    "DOMAIN-SUFFIX,ads.youtube.com,YouTube",
+    
+    // Netflix
+    "RULE-SET,Netflix,Netflix",
+    "RULE-SET,Netflix_Domain,Netflix",
+    "RULE-SET,Netflix_IP,Netflix",
+    
+    // Disney+
+    "RULE-SET,Disney_Domain,Disney+",
+
+    // 守候影院emby
+    "DOMAIN-SUFFIX,test404.net,Emby",
+    "DOMAIN-SUFFIX,cn2gias.uk,Emby",
+    "DOMAIN-SUFFIX,array2026.cc,Emby",
+    "DOMAIN-SUFFIX,array2026.com,Emby",
+    
+    // Emby
+    "RULE-SET,Emby,Emby",
+
+    // Spotify
+    "RULE-SET,Spotify_Domain,Spotify",
+
+    // TikTok
+    "RULE-SET,TikTok_Domain,TikTok",
+
+    // Twitch
+    "RULE-SET,Twitch_Domain,Twitch",
+
+    // OpenAi ChatGPT
+    "RULE-SET,OpenAI_Domain,AI3",
+    "DOMAIN-SUFFIX,chatgpt.com,AI3",
+    "DOMAIN,cdn.openaimerge.com,AI3",
+    "DOMAIN,setup.auth.openai.com,AI3",
+    "DOMAIN,cdn.workos.com,AI3",
+    "DOMAIN,forwarder.workos.com,AI3",
+    "DOMAIN,images.workoscdn.com,AI3",
+    "DOMAIN,workos.imgix.net,AI3",
+    "DOMAIN,setup.workos.com,AI3",
+    "DOMAIN,ct.sendgrid.net,AI3",
+    "DOMAIN,oaistatsig.com,AI3",
+    "DOMAIN,rum.browser-intake-datadoghq.com,AI3",
+    "DOMAIN,challenges.cloudflare.com,AI3",
+    "DOMAIN-KEYWORD,openai,AI3",
+    "IP-CIDR,64.23.132.171/32,AI3",
+    "IP-ASN,20473,AI3",
+
+    // Google Gemini
+    "RULE-SET,Gemini,AI3",
+    "DOMAIN-SUFFIX,gemini.googleusercontent.com,AI3",
+
+    // Anthropic Claude
+    "RULE-SET,Anthropic,AI3",
+    "RULE-SET,Anthropic_Domain,AI3",
+    "RULE-SET,Anthropic_IP,AI3",
+    "DOMAIN-SUFFIX,claude.ai,AI3",
+    "DOMAIN-SUFFIX,anthropic.com,AI3",
+    "DOMAIN-SUFFIX,claudeusercontent.com,AI3",
+    "DOMAIN-SUFFIX,claudeusercontent.com.cdn.cloudflare.net,AI3",
+
+    // Grok
+    "RULE-SET,Grok_Domain,Grok",
+
+    // Meta
+    "RULE-SET,Facebook,Meta",
+    "RULE-SET,Facebook_Domain,Meta",
+    "RULE-SET,Instagram_Domain,Meta",
+    "RULE-SET,WhatsApp_Domain,Meta",
+    "DOMAIN-KEYWORD,whatsapp,Meta",
+    "DOMAIN-SUFFIX,threads.com,Meta",
+    "DOMAIN-SUFFIX,threads.net,Meta",
+    "DOMAIN-SUFFIX,threadsusercontent.com,Meta",
+    "DOMAIN-SUFFIX,meta.ai,Meta",
+    "DOMAIN-SUFFIX,ai.meta.com,Meta",
+    "DOMAIN-SUFFIX,muse.ai,Meta",
+    "DOMAIN-SUFFIX,metaaivm.com,Meta",
+    "IP-CIDR,157.240.0.0/16,Meta,no-resolve",
+    "IP-CIDR,31.13.64.0/18,Meta,no-resolve",
+    "IP-CIDR,69.171.224.0/19,Meta,no-resolve",
+    "IP-CIDR,173.252.64.0/18,Meta,no-resolve",
+
+    // LINE
+    "RULE-SET,Line_Domain,LINE",
+
+    // Microsoft / Copilot
+    "RULE-SET,Copilot_Domain,Microsoft",
+    "RULE-SET,Copilot_IP,Microsoft",
+    "RULE-SET,Microsoft,Microsoft",
+
+    // iCloud
+    "DOMAIN,mask.icloud.com,iCloud",
+    "DOMAIN,mask-h2.icloud.com,iCloud",
+    "DOMAIN,mask-api.icloud.com,iCloud",
+    "DOMAIN,probe.icloud.com,iCloud",
+    "DOMAIN,pong.icloud.com,iCloud",
+    "DOMAIN,metrics.icloud.com,iCloud",
+    "DOMAIN-SUFFIX,apple-dns.net,iCloud",
+    "DOMAIN-KEYWORD,icloud.com.akadns.net,iCloud",
+    "RULE-SET,iCloud,iCloud",
+
+    // Apple
+    "RULE-SET,Apple,Apple",
+    "RULE-SET,Apple_Domain,Apple",
+
+    // Amazon
+    "RULE-SET,Amazon_Domain,Amazon",
+
+    // Google
+    "RULE-SET,Google,Google",
+    "RULE-SET,Google_Domain,Google",
+    "DOMAIN-KEYWORD,google,Google",
+    "DOMAIN-SUFFIX,googleapis.com,Google",
+
+    // X
+    "DOMAIN-SUFFIX,x.com,X",
+    "DOMAIN-SUFFIX,twitter.com,X",
+    "DOMAIN-SUFFIX,t.co,X",
+    "DOMAIN-SUFFIX,twimg.com,X",
+    "DOMAIN-SUFFIX,tweetdeck.com,X",
+    "DOMAIN-SUFFIX,pscp.tv,X",
+    "DOMAIN-SUFFIX,periscope.tv,X",
+    "DOMAIN-SUFFIX,twtrdns.net,X",
+    
+    // Telegram
+    "RULE-SET,Telegram,Telegram",
+    "RULE-SET,Telegram_Domain,Telegram",
+    "RULE-SET,Telegram_IP,Telegram",
+    "IP-CIDR,91.108.4.0/22,Telegram,no-resolve",
+    "IP-CIDR,91.108.8.0/22,Telegram,no-resolve",
+    "IP-CIDR,91.108.12.0/22,Telegram,no-resolve",
+    "IP-CIDR,91.108.16.0/22,Telegram,no-resolve",
+    "IP-CIDR,91.108.20.0/22,Telegram,no-resolve",
+    "IP-CIDR,91.108.56.0/22,Telegram,no-resolve",
+    "IP-CIDR,149.154.160.0/20,Telegram,no-resolve",
+    "IP-CIDR6,2001:b28:f23d::/48,Telegram,no-resolve",
+    "IP-CIDR6,2001:b28:f23f::/48,Telegram,no-resolve",
+    "IP-CIDR6,2001:67c:4e8::/48,Telegram,no-resolve",
+
+    // Github
+    "RULE-SET,GitHub_Domain,Github",
+    "DOMAIN-SUFFIX,github.com,Github",
+    "DOMAIN-SUFFIX,raw.githubusercontent.com,Github",
+
+    // Speedtest
+    "DOMAIN-SUFFIX,speedtest.net,Speedtest",
+    "DOMAIN-SUFFIX,speedtest.com,Speedtest",
+    "DOMAIN-SUFFIX,ookla.com,Speedtest",
+    "DOMAIN-SUFFIX,ooklaserver.net,Speedtest",
+    "DOMAIN-SUFFIX,ookla.net,Speedtest",
+    "DOMAIN-SUFFIX,speedtestcustom.com,Speedtest",
+
+    // 中国大陆
+    //"GEOSITE,CN,DIRECT",
+    "RULE-SET,ChinaMax_Domain,DIRECT,no-resolve",
+    "GEOIP,CN,DIRECT,no-resolve",
+
+    // 最终兜底
+    "MATCH,🔘 PROXY-Gate"
+  ];
+
+  // ============================================================
+  // Rule Providers
+  // ============================================================
+
+  fixed["rule-providers"] = {
+    "Apple": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Apple_classical-rest_b2adb0dcf08c81dc.yaml"
+    },
+
+    "Apple_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Apple_domain-mrs_7e2479ae82882b86.mrs"
+    },
+
+    "iCloud": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/iCloud_domain-mrs_e744848b935bbd23.mrs"
+    },
+
+    "Advertising": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Advertising_classical-rest_4cbe8ce66543d1b4.yaml"
+    },
+    "Advertising_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Advertising_domain-mrs_8ac20dd3ffdba08d.mrs"
+    },
+    "Advertising_iP": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Advertising_ipcidr-mrs_987068ba16404730.mrs"
+    },
+
+    "ACL4SSR_BanAD": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/mrs/BanAD_domain.mrs"
+    },
+
+    "ACL4SSR_BanProgramAD": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/mrs/BanProgramAD_domain.mrs"
+    },
+
+    "ACL4SSR_BanProgramAD_iP": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/mrs/BanProgramAD_ip.mrs"
+    },
+
+    "ChinaMax_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/main/MRS/ChinaMax_Domain.mrs"
+    },
+
+    "OpenAI_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/OpenAI_domain-mrs_fadf486f6b825017.mrs"
+    },
+    
+    "Anthropic": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Anthropic_classical-rest_110041703b11ecf4.yaml"
+    },
+
+    "Anthropic_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Anthropic_domain-mrs_df6512db07edff18.mrs"
+    },
+
+    "Anthropic_IP": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Anthropic_ipcidr-mrs_c7d968da97972833.mrs"
+    },
+
+    "Gemini": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Gemini_classical_5cce94bda31ad8d5.yaml"
+    },
+
+    "Google": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Google_classical-rest_bac5fc473d665b26.yaml"
+    },
+
+    "Google_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Google_domain-mrs_bf3ab049cabc9d56.mrs"
+    },
+
+
+    "Amazon_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Amazon_domain-mrs_4a6c32e895a0946e.mrs"
+    },
+
+    "Netflix": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Netflix_classical-rest_0f95e4fd9944542b.yaml"
+    },
+
+    "Netflix_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Netflix_domain-mrs_e186b4515be192fe.mrs"
+    },
+
+    "Netflix_IP": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Netflix_ipcidr-mrs_91e76c41ba675173.mrs"
+    },
+
+    "Spotify_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Spotify_domain-mrs_41ab1792bfc28985.mrs"
+    },
+
+    "TikTok_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/TikTok_domain-mrs_48fd44c890a0784e.mrs"
+    },
+
+    "Microsoft": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Microsoft_domain-mrs_da6a9c1ccdacd1d9.mrs"
+    },
+
+    "Copilot_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Copilot_domain-mrs_5b77563f4d477ade.mrs"
+    },
+
+    "Copilot_IP": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Copilot_ipcidr-mrs_8f64d7506c0c44b1.mrs"
+    },
+
+    "Facebook": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Facebook_classical-rest_29f7afa153d0d58f.yaml"
+    },
+
+    "Facebook_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Facebook_domain-mrs_34b1cdae86751d29.mrs"
+    },
+
+    "Instagram_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Instagram_domain-mrs_4e9bcf7287f125ac.mrs"
+    },
+
+    "WhatsApp_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Whatsapp_domain-mrs_44f7a8ecf6dc7e33.mrs"
+    },
+
+    "Telegram": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Telegram_classical-rest_a10ac54bdba75cfe.yaml"
+    },
+
+    "Telegram_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Telegram_domain-mrs_da57f262d121afe2.mrs"
+    },
+
+    "Telegram_IP": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Telegram_ipcidr-mrs_9f9c7386571fe662.mrs"
+    },
+
+    "Grok_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Grok_domain-mrs_38856ec822fbcc6a.mrs"
+    },
+
+    "Disney_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Disney_domain-mrs_31cfeb93da298a54.mrs"
+    },
+
+    "Twitch_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Twitch_domain-mrs_449a5e8084acdd99.mrs"
+    },
+
+    "Line_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Line_domain-mrs_825f50af92b53c9a.mrs"
+    },
+
+    "GitHub_Domain": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/GitHub_domain-mrs_e6c22fb59671e56e.mrs"
+    },
+    
+    "Emby": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "mrs",
+      "interval": 86400,
+      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Emby_domain-mrs_2f9d44394facab13.mrs"
+    }
+  };
+
+  return fixed;
+}
