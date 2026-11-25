@@ -1308,8 +1308,8 @@ function main(config) {
     "DOMAIN-SUFFIX,ilce.alicdn.com,DIRECT",
     "DOMAIN-SUFFIX,geminiweb-pa.clients6.google.com,AI3",
     //下方为各类规则集误匹配规则
-    "DOMAIN-SUFFIX,doubao.com,DIRECT",
-    "DOMAIN-SUFFIX,doubaocdn.com,DIRECT",
+
+    
     // 广告 / 隐私
     "RULE-SET,Advertising,REJECT",
     "RULE-SET,Advertising_Domain,REJECT",
@@ -1444,8 +1444,8 @@ function main(config) {
     "RULE-SET,Line_Domain,LINE",
 
     // Microsoft / Copilot
+    "DOMAIN,res.public.onecdn.static.microsoft,Microsoft",
     "RULE-SET,Copilot_Domain,Microsoft",
-    "RULE-SET,Copilot_IP,Microsoft",
     "RULE-SET,Microsoft,Microsoft",
 
     // iCloud
@@ -1537,7 +1537,7 @@ function main(config) {
       "behavior": "domain",
       "format": "mrs",
       "interval": 86400,
-      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Apple_domain-mrs_7e2479ae82882b86.mrs"
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs"
     },
 
     "iCloud": {
@@ -1720,17 +1720,9 @@ function main(config) {
       "behavior": "domain",
       "format": "mrs",
       "interval": 86400,
-      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Copilot_domain-mrs_5b77563f4d477ade.mrs"
+      "url": "https://raw.githubusercontent.com/kiki-rgb-00/kiki/refs/heads/main/MRS/Copilot_Domain.mrs"
     },
-
-    "Copilot_IP": {
-      "type": "http",
-      "behavior": "ipcidr",
-      "format": "mrs",
-      "interval": 86400,
-      "url": "https://magicrule.pages.dev/data/_shared/artifacts/Copilot_ipcidr-mrs_8f64d7506c0c44b1.mrs"
-    },
-
+    
     "Facebook": {
       "type": "http",
       "behavior": "classical",
