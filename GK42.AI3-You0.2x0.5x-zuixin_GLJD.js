@@ -401,6 +401,17 @@ function main(config) {
   });
 
   fixed["proxy-groups"].push({
+    "name": "PCCW🇭🇰",
+    "type": "select",
+    "icon": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Viu.png",
+    "proxies": [
+      
+      "🔘 PROXY-Gate",
+      "DIRECT"
+    ]
+  });
+  
+  fixed["proxy-groups"].push({
     "name": "Spotify",
     "type": "select",
     "icon": "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Spotify.png",
@@ -436,7 +447,7 @@ function main(config) {
   fixed["proxy-groups"].push({
     "name": "AI3",
     "type": "select",
-    "icon": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Gemini_01.png",
+    "icon": "https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png",
     "proxies": [
       
       "🔘 PROXY-Gate",
@@ -1246,6 +1257,7 @@ function main(config) {
     "Netflix",
     "Disney+",
     "Emby",
+    "PCCW🇭🇰",
     "Spotify",
     "TikTok",
     "Twitch",
@@ -1432,6 +1444,33 @@ function main(config) {
     // Disney+
     "RULE-SET,Disney_Domain,Disney+",
 
+    // 规则名称: PCCW电讯盈科 25
+    "DOMAIN-SUFFIX,1010.com.hk,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,d1k2us671qcoau.cloudfront.net,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,dfp6rglgjqszk.cloudfront.net,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,esmarthealth.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hkcsl.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hkt-enterprise.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hkt-eye.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hkt.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hkteducation.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hktpremier.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,hktshop.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,moov.hk,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,netvigator.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,now-ashare.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,now-tv.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,now.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,now.com.hk,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,nowe.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,nowe.hk,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,pccw.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,pccwglobal.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,pccwsolutions.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,theclub.com.hk,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,uhub.com,PCCW🇭🇰",
+    "DOMAIN-SUFFIX,viu.com,PCCW🇭🇰",
+    
     // 守候影院emby
     "DOMAIN-SUFFIX,test404.net,Emby",
     "DOMAIN-SUFFIX,cn2gias.uk,Emby",
